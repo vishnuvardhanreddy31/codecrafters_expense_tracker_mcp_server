@@ -58,11 +58,20 @@ Add the MCP server configuration to Cline's settings.json:
 
 ```json
 {
-  "cline.mcpServers": {
-    "expense-tracker": {
-      "command": "python",
-      "args": ["-u", "path/to/main.py"],
-      "env": {}
+  "mcpServers": {
+    "expense_tracker": {
+      "autoApprove": [],
+      "disabled": false,
+      "timeout": 10000,
+      "type": "streamableHttp",
+      "url": "https://codecrafters-expense-tracker.onrender.com/expense_tracker/mcp"
+    },
+    "exp_eval": {
+      "autoApprove": [],
+      "disabled": false,
+      "timeout": 100,
+      "type": "streamableHttp",
+      "url": "https://codecrafters-expense-tracker.onrender.com/exp_eval/mcp"
     }
   }
 }
