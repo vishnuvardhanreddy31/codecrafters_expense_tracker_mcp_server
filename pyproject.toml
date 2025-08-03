@@ -8,4 +8,6 @@ dependencies = [
     "fastapi>=0.116.1",
     "mcp[cli]>=1.12.3",
     "pymongo>=4.13.2",
+    "requests>=2.31.0",
+    "python-dotenv>=1.0.0",
 ]
