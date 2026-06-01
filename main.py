@@ -12,6 +12,7 @@ from typing import Optional
 import os
 from dotenv import load_dotenv
 import uvicorn
+from contextlib import asynccontextmanager
 
 # Load environment variables from .env file
 load_dotenv()
@@ -21,7 +22,7 @@ MONGO_URI = os.getenv("MONGO_URI")
 if not MONGO_URI:
     raise ValueError("MONGO_URI environment variable is not set. Please configure it in .env file or deployment environment.")
 
-# Create FastMCP instance with HTTP transport
+# Create FastMCP instance
 mcp = FastMCP("expense-tracker")
 
 # User authentication helpers
@@ -818,8 +819,10 @@ if __name__ == "__main__":
     # Get port from environment variable (Render sets PORT automatically)
     port = int(os.getenv("PORT", 8000))
     
-    # Create the HTTP app
-    app = mcp.http_app()
-    
-    # Run with uvicorn - properly bind to 0.0.0.0
-    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
+    # Run MCP with HTTP transport directly
+    # This creates a proper HTTP server that listens on 0.0.0.0:PORT
+    mcp.run(
+        transport="http",
+        host="0.0.0.0",
+        port=port
+    )
