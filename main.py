@@ -815,4 +815,4 @@ def duplicate_my_expense(
 
 if __name__ == "__main__":
     # Run with HTTP transport
-    mcp.run(transport='http')
+    mcp.run(transport='streamable-http')
