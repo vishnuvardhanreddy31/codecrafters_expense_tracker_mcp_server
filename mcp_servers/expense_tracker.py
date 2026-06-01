@@ -809,4 +809,4 @@ def duplicate_my_expense(
 
 if __name__ == "__main__":
     # Get port from environment variable (Render sets PORT automatically)
-    mcp.run(transport='streamable-http')
+    mcp.run(transport='http')
