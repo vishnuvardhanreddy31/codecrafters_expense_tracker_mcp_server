@@ -1,6 +1,6 @@
 # Expense Tracker MCP Server
 
-An MCP (Model Context Protocol) server for expense tracking with user authentication and comprehensive expense management tools.
+A lightweight, single-file MCP (Model Context Protocol) server for expense tracking with user authentication and comprehensive expense management tools. Built with FastMCP and HTTP transport for seamless integration.
 
 ## Features
 
@@ -9,6 +9,7 @@ An MCP (Model Context Protocol) server for expense tracking with user authentica
 - **Smart Tools**: Natural language expense adding, budget alerts, trend analysis
 - **Multi-user Support**: Each user only sees and manages their own expenses
 - **Data Visualization**: Summaries, reports, and trends analysis
+- **FastMCP with HTTP Transport**: Simple HTTP-based communication protocol
 
 ## Setup
 
@@ -29,7 +30,7 @@ An MCP (Model Context Protocol) server for expense tracking with user authentica
 2. Install dependencies:
 
    ```bash
-   pip install -r requirements.txt
+   pip install -e .
    ```
 
 3. Create a `.env` file with your MongoDB connection string:
@@ -40,17 +41,17 @@ An MCP (Model Context Protocol) server for expense tracking with user authentica
 
 4. Run the server locally:
    ```bash
-   python fastapi_server/server.py
+   python main.py
    ```
-   The server will start at `http://localhost:8000`
+   The server will start at `http://localhost:8000` with MCP endpoints at `/mcp`
 
 ## Using with Cline (Local Setup)
 
-### Step 1: Start the Local Server
+### Step 1: Start the Server
 
 Run the server on your local machine:
 ```bash
-python fastapi_server/server.py
+python main.py
 ```
 
 The server will be available at `http://localhost:8000`
@@ -59,7 +60,7 @@ The server will be available at `http://localhost:8000`
 
 Add the MCP server configuration to Cline's `settings.json`:
 
-**For HTTP Transport (Recommended for Local):**
+**For HTTP Transport (Recommended):**
 
 ```json
 {
@@ -69,37 +70,7 @@ Add the MCP server configuration to Cline's `settings.json`:
       "disabled": false,
       "timeout": 10000,
       "type": "http",
-      "url": "http://localhost:8000/expense_tracker/mcp"
-    },
-    "exp_eval": {
-      "autoApprove": [],
-      "disabled": false,
-      "timeout": 100,
-      "type": "http",
-      "url": "http://localhost:8000/exp_eval/mcp"
-    }
-  }
-}
-```
-
-**For Streamable HTTP Transport (Alternative):**
-
-```json
-{
-  "mcpServers": {
-    "expense_tracker": {
-      "autoApprove": [],
-      "disabled": false,
-      "timeout": 10000,
-      "type": "streamableHttp",
-      "url": "http://localhost:8000/expense_tracker/mcp"
-    },
-    "exp_eval": {
-      "autoApprove": [],
-      "disabled": false,
-      "timeout": 100,
-      "type": "streamableHttp",
-      "url": "http://localhost:8000/exp_eval/mcp"
+      "url": "http://localhost:8000/mcp"
     }
   }
 }
@@ -122,8 +93,8 @@ In Cline, you can now use commands like:
 1. Create a new Web Service on Render
 2. Link your GitHub repository
 3. Use the following settings:
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `python fastapi_server/server.py`
+   - **Build Command**: `pip install -e .`
+   - **Start Command**: `python main.py`
    - **Environment Variables**: Add `MONGO_URI` with your MongoDB connection string
 
 4. Once deployed, update Cline settings to use the Render URL:
@@ -136,14 +107,7 @@ In Cline, you can now use commands like:
       "disabled": false,
       "timeout": 10000,
       "type": "http",
-      "url": "https://your-app.onrender.com/expense_tracker/mcp"
-    },
-    "exp_eval": {
-      "autoApprove": [],
-      "disabled": false,
-      "timeout": 100,
-      "type": "http",
-      "url": "https://your-app.onrender.com/exp_eval/mcp"
+      "url": "https://your-app.onrender.com/mcp"
     }
   }
 }
@@ -199,21 +163,40 @@ User: Add a new expense for lunch today that cost $15
 AI: I'll help you add that expense. Let me log you in first.
 User: My username is john and password is pass123
 AI: Logged in as john. I'll add your expense now.
-     Expense added for john with ID: 64f7a1b3e4b0a2c5d6e7f8g9
+      Expense added for john with ID: 64f7a1b3e4b0a2c5d6e7f8g9
 ```
 
 ### Getting Expense Summary
 
 ```
 User: Show me my spending summary for this month
-AI: Here's your expense summary for August 2025:
-     Total expenses: 15
-     Total amount: $523.45
-     Top categories:
-     - Food: $203.50 (38.9%)
-     - Transport: $145.20 (27.7%)
-     - Entertainment: $95.75 (18.3%)
+AI: Here's your expense summary for June 2026:
+    Total expenses: 15
+    Total amount: $523.45
+    Top categories:
+    - Food: $203.50 (38.9%)
+    - Transport: $145.20 (27.7%)
+    - Entertainment: $95.75 (18.3%)
 ```
+
+## Project Structure
+
+```
+.
+├── main.py              # Single file containing all MCP tools and logic
+├── pyproject.toml       # Project dependencies and metadata
+├── README.md            # This file
+├── .env.example         # Environment variables template
+└── .gitignore           # Git ignore rules
+```
+
+## Technology Stack
+
+- **FastMCP**: Model Context Protocol server framework
+- **HTTP Transport**: Simple HTTP-based communication
+- **MongoDB**: Database for storing expenses and user data
+- **PyMongo**: MongoDB Python driver
+- **Pydantic**: Data validation using Python type annotations
 
 ## Troubleshooting
 
@@ -223,8 +206,13 @@ AI: Here's your expense summary for August 2025:
 - Verify Cline settings have the correct URL and type
 
 ### CORS Issues
-- If you encounter CORS errors, ensure FastAPI server allows requests from Cline
-- Check browser console for specific error messages
+- If you encounter CORS errors, the HTTP transport handles this automatically
+
+### Port Already in Use
+- Change the port by setting the `PORT` environment variable:
+  ```bash
+  PORT=8001 python main.py
+  ```
 
 ## Author
 
