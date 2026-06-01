@@ -11,6 +11,7 @@ import json
 from typing import Optional
 import os
 from dotenv import load_dotenv
+import uvicorn
 
 # Load environment variables from .env file
 load_dotenv()
@@ -814,5 +815,11 @@ def duplicate_my_expense(
         return f"Error duplicating expense: {str(e)}"
 
 if __name__ == "__main__":
-    # Run with HTTP transport
-    mcp.run(transport='streamable-http')
+    # Get port from environment variable (Render sets PORT automatically)
+    port = int(os.getenv("PORT", 8000))
+    
+    # Create the HTTP app
+    app = mcp.http_app()
+    
+    # Run with uvicorn - properly bind to 0.0.0.0
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
