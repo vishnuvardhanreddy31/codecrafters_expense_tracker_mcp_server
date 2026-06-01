@@ -23,7 +23,7 @@ if not MONGO_URI:
 # Create FastMCP instance
 
 PORT = os.environ.get("PORT",8000)
-mcp = FastMCP("expense-tracker",host='0.0.0.0',port=PORT)
+mcp = FastMCP("expense-tracker")
 
 # User authentication helpers
 current_user_id = None
