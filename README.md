@@ -38,23 +38,51 @@ An MCP (Model Context Protocol) server for expense tracking with user authentica
    MONGO_URI=mongodb+srv://your-username:your-password@your-cluster.mongodb.net/expenses
    ```
 
-4. Run the server:
+4. Run the server locally:
    ```bash
-   python main.py
+   python fastapi_server/server.py
    ```
+   The server will start at `http://localhost:8000`
 
-## Deployment on Render
+## Using with Cline (Local Setup)
 
-1. Create a new Web Service on Render
-2. Link your GitHub repository
-3. Use the following settings:
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `python main.py`
-   - **Environment Variables**: Add `MONGO_URI` with your MongoDB connection string
+### Step 1: Start the Local Server
 
-## Using with Cline
+Run the server on your local machine:
+```bash
+python fastapi_server/server.py
+```
 
-Add the MCP server configuration to Cline's settings.json:
+The server will be available at `http://localhost:8000`
+
+### Step 2: Configure Cline Settings
+
+Add the MCP server configuration to Cline's `settings.json`:
+
+**For HTTP Transport (Recommended for Local):**
+
+```json
+{
+  "mcpServers": {
+    "expense_tracker": {
+      "autoApprove": [],
+      "disabled": false,
+      "timeout": 10000,
+      "type": "http",
+      "url": "http://localhost:8000/expense_tracker/mcp"
+    },
+    "exp_eval": {
+      "autoApprove": [],
+      "disabled": false,
+      "timeout": 100,
+      "type": "http",
+      "url": "http://localhost:8000/exp_eval/mcp"
+    }
+  }
+}
+```
+
+**For Streamable HTTP Transport (Alternative):**
 
 ```json
 {
@@ -64,14 +92,58 @@ Add the MCP server configuration to Cline's settings.json:
       "disabled": false,
       "timeout": 10000,
       "type": "streamableHttp",
-      "url": "https://codecrafters-expense-tracker.onrender.com/expense_tracker/mcp"
+      "url": "http://localhost:8000/expense_tracker/mcp"
     },
     "exp_eval": {
       "autoApprove": [],
       "disabled": false,
       "timeout": 100,
       "type": "streamableHttp",
-      "url": "https://codecrafters-expense-tracker.onrender.com/exp_eval/mcp"
+      "url": "http://localhost:8000/exp_eval/mcp"
+    }
+  }
+}
+```
+
+### Step 3: Restart Cline
+
+After updating the settings, restart Cline to load the new MCP server configuration.
+
+### Step 4: Start Using
+
+In Cline, you can now use commands like:
+- "Register a new user"
+- "Add an expense for lunch today that cost $15"
+- "Show me my spending summary for this month"
+- "Get my recent expenses"
+
+## Deployment on Render
+
+1. Create a new Web Service on Render
+2. Link your GitHub repository
+3. Use the following settings:
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `python fastapi_server/server.py`
+   - **Environment Variables**: Add `MONGO_URI` with your MongoDB connection string
+
+4. Once deployed, update Cline settings to use the Render URL:
+
+```json
+{
+  "mcpServers": {
+    "expense_tracker": {
+      "autoApprove": [],
+      "disabled": false,
+      "timeout": 10000,
+      "type": "http",
+      "url": "https://your-app.onrender.com/expense_tracker/mcp"
+    },
+    "exp_eval": {
+      "autoApprove": [],
+      "disabled": false,
+      "timeout": 100,
+      "type": "http",
+      "url": "https://your-app.onrender.com/exp_eval/mcp"
     }
   }
 }
@@ -127,7 +199,7 @@ User: Add a new expense for lunch today that cost $15
 AI: I'll help you add that expense. Let me log you in first.
 User: My username is john and password is pass123
 AI: Logged in as john. I'll add your expense now.
-    Expense added for john with ID: 64f7a1b3e4b0a2c5d6e7f8g9
+     Expense added for john with ID: 64f7a1b3e4b0a2c5d6e7f8g9
 ```
 
 ### Getting Expense Summary
@@ -135,13 +207,24 @@ AI: Logged in as john. I'll add your expense now.
 ```
 User: Show me my spending summary for this month
 AI: Here's your expense summary for August 2025:
-    Total expenses: 15
-    Total amount: $523.45
-    Top categories:
-    - Food: $203.50 (38.9%)
-    - Transport: $145.20 (27.7%)
-    - Entertainment: $95.75 (18.3%)
+     Total expenses: 15
+     Total amount: $523.45
+     Top categories:
+     - Food: $203.50 (38.9%)
+     - Transport: $145.20 (27.7%)
+     - Entertainment: $95.75 (18.3%)
 ```
+
+## Troubleshooting
+
+### Connection Issues
+- Ensure the server is running at `http://localhost:8000`
+- Check that MongoDB connection string is correct in `.env`
+- Verify Cline settings have the correct URL and type
+
+### CORS Issues
+- If you encounter CORS errors, ensure FastAPI server allows requests from Cline
+- Check browser console for specific error messages
 
 ## Author
 
